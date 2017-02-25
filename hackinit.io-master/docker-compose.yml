@@ -1,0 +1,28 @@
+version: '2'
+
+services:
+
+  django:
+    build: ./django
+    command: python manage.py runserver 0.0.0.0:8000
+    expose:
+      - "8000"
+    env_file: secrets.env
+    volumes:
+      - ./django:/code/
+
+  static:
+    build: ./static
+    volumes:
+      - ./static:/usr/share/static
+
+  nginx:
+    restart: always
+    build: ./nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    links:
+      - django:django
+    volumes_from:
+      - static
